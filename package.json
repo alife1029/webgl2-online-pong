@@ -1,0 +1,16 @@
+{
+  "name": "online-pong",
+  "version": "1.0.0",
+  "description": "Online pong game",
+  "main": "index.js",
+  "author": "Ali Efe GÜR",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
