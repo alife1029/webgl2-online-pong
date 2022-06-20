@@ -15,6 +15,9 @@ class App {
       running: false
     };
 
+    // Assets
+    this.assets = {};
+
     // Time
     this.lastFrame = 0;
     this.deltaTime = 0;
@@ -22,18 +25,24 @@ class App {
 
   async run() {
     await this.loadAssets();
-
+    this.initialize();
     this.appState.running = true;
     this.start();
     requestAnimationFrame(this.update.bind(this));
   }
 
   async loadAssets() {
+    await fetch('/resources').then(res => res.json().then(data => this.assets = data));
+    console.log(this.assets);
+  }
 
+  initialize() {
+    // Initialize renderer
+    Renderer2D.initialize(this.gl, this.assets.shaders.defaultVert, this.assets.shaders.defaultFrag);
   }
 
   start() {
-
+    
   }
 
   update(timestamp) {
@@ -55,6 +64,7 @@ class App {
 
   dispose() {
     // Dispose resources here
+    Renderer2D.dispose();
   }
 }
 

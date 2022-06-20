@@ -4,25 +4,23 @@ class Shader {
    * @param {string} vsID 
    * @param {string} fsID 
    */
-  constructor(gl, vsID, fsID) {
+  constructor(gl, vsSource, fsSource) {
     this.gl = gl;
     this.initialized = false;
-    this.init(vsID, fsID);
+    this.init(vsSource, fsSource);
   }
 
   /**
    * @param {string} vsID 
    * @param {string} fsID 
    */
-  init(vsID, fsID) {
+  init(vsSrc, fsSrc) {
     if (!this.initialized) {
-      const vsSrc = document.getElementById(vsID).innerHTML;
-      const fsSrc = document.getElementById(fsID).innerHTML;
 
-      this.program = gl.createProgram();
+      this.program = this.gl.createProgram();
 
-      this.compile(vsSrc, gl.VERTEX_SHADER);
-      this.compile(fsSrc, gl.FRAGMENT_SHADER);
+      this.compile(vsSrc, this.gl.VERTEX_SHADER);
+      this.compile(fsSrc, this.gl.FRAGMENT_SHADER);
       this.link();
 
       this.initialized = true;
@@ -36,6 +34,9 @@ class Shader {
    * @param {number} type 
    */
   compile(src, type) {
+    // Process tokens
+    src = src.replace('${MAX_TEXTURES}', this.gl.getParameter(this.gl.MAX_SAMPLES).toString());
+
     const shader = this.gl.createShader(type);
     this.gl.shaderSource(shader, src);
     this.gl.compileShader(shader);
@@ -43,7 +44,10 @@ class Shader {
     // Compile errors
     if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
       const gpuLog = this.gl.getShaderInfoLog(shader);
-      console.error('Failed to compile shader!\nShader Type: ' + type + '\n\nGPU Log:\n' + gpuLog);
+      const shaderType =  type === this.gl.VERTEX_SHADER ? 'Vertex Shader' : 
+                          type === this.gl.FRAGMENT_SHADER ? 'Fragment Shader' : 
+                          'Unknown Shader Type';
+      console.error('Failed to compile shader!\nShader Type: ' + shaderType + '\n\nGPU Log:\n' + gpuLog);
       return;
     }
 
